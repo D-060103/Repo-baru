@@ -25,8 +25,8 @@
                     <th>Category</th>
                     <th>Name</th>
                     <th>Spec</th>
-                    <th>Qty</th>
-                    <th>Image</th>
+                    <th>Quantity</th>
+                    <!-- <th>Image</th> -->
                     <th>Barcode</th>
                     <th>Date</th>
                     <th>Posisi</th>
@@ -72,14 +72,16 @@
             serverSide: true,
             ajax: "{{ route('api.products') }}",
             columns: [
-                {data: 'id', name: 'id'},
-                {data: 'nama', name: 'nama'},
-                {data: 'harga', name: 'harga'},
-                {data: 'qty', name: 'qty'},
-                {data: 'show_photo', name: 'show_photo'},
-                {data: 'category_name', name: 'category_name'},
-                {data: 'action', name: 'action', orderable: false, searchable: false}
-            ]
+                    {data: 'id', name: 'id'},
+                    {data: 'category_id', name: 'category_id'},
+                    {data: 'nama', name: 'nama'},
+                    {data: 'spec', name: 'spec'},
+                    {data: 'qty', name: 'qty'},
+                    {data: 'barcode', name: 'barcode'},
+                    {data: 'date', name: 'date'},
+                    {data: 'posisi', name: 'posisi'},
+                    {data: 'action', name: 'action', orderable: false, searchable: false}
+                    ]
         });
 
         function addForm() {
@@ -178,7 +180,7 @@
                         error : function(data){
                             swal({
                                 title: 'Oops...',
-                                text: data.message,
+                                text: 'Terjadi kesalahan saat menyimpan data: ' + data.responseJSON.message, // Pesan kustom disini,
                                 type: 'error',
                                 timer: '1500'
                             })

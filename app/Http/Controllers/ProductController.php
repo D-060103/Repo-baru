@@ -45,35 +45,33 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        $category = Category::orderBy('name','ASC')
-            ->get()
-            ->pluck('name','id');
+{
+    $this->validate($request, [
+        'category_id' => 'required',
+        'nama' => 'required|string',
+        'qty' => 'required',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'spek' => 'nullable',
+        'barcode' => 'required',
+        'date' => 'required',
+        'posisi' => 'required',
+    ]);
 
-        $this->validate($request , [
-            'nama'          => 'required|string',
-            'harga'         => 'required',
-            'qty'           => 'required',
-            'image'         => 'required',
-            'category_id'   => 'required',
-        ]);
+    $input = $request->all();
+    $input['image'] = null;
 
-        $input = $request->all();
-        $input['image'] = null;
-
-        if ($request->hasFile('image')){
-            $input['image'] = '/upload/products/'.str_slug($input['nama'], '-').'.'.$request->image->getClientOriginalExtension();
-            $request->image->move(public_path('/upload/products/'), $input['image']);
-        }
-
-        Product::create($input);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Products Created'
-        ]);
-
+    if ($request->hasFile('image')) {
+        $input['image'] = '/upload/products/' . str_slug($input['nama'], '-') . '.' . $request->image->getClientOriginalExtension();
+        $request->image->move(public_path('/upload/products/'), $input['image']);
     }
+
+    Product::create($input);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Produk berhasil dibuat'
+    ]);
+}
 
     /**
      * Display the specified resource.
@@ -109,39 +107,38 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        $category = Category::orderBy('name','ASC')
-            ->get()
-            ->pluck('name','id');
+{
+    $this->validate($request, [
+        'category_id' => 'required',
+        'nama' => 'required|string',
+        'qty' => 'required',
+        'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'spek' => 'nullable',
+        'barcode' => 'required',
+        'date' => 'required',
+        'posisi' => 'required',
+    ]);
 
-        $this->validate($request , [
-            'nama'          => 'required|string',
-            'harga'         => 'required',
-            'qty'           => 'required',
-//            'image'         => 'required',
-            'category_id'   => 'required',
-        ]);
+    $input = $request->all();
+    $product = Product::findOrFail($id);
 
-        $input = $request->all();
-        $produk = Product::findOrFail($id);
+    $input['image'] = $product->image;
 
-        $input['image'] = $produk->image;
-
-        if ($request->hasFile('image')){
-            if (!$produk->image == NULL){
-                unlink(public_path($produk->image));
-            }
-            $input['image'] = '/upload/products/'.str_slug($input['nama'], '-').'.'.$request->image->getClientOriginalExtension();
-            $request->image->move(public_path('/upload/products/'), $input['image']);
+    if ($request->hasFile('image')) {
+        if (!$product->image == NULL) {
+            unlink(public_path($product->image));
         }
-
-        $produk->update($input);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Products Update'
-        ]);
+        $input['image'] = '/upload/products/' . str_slug($input['nama'], '-') . '.' . $request->image->getClientOriginalExtension();
+        $request->image->move(public_path('/upload/products/'), $input['image']);
     }
+
+    $product->update($input);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Produk berhasil diperbarui'
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.
@@ -166,23 +163,40 @@ class ProductController extends Controller
     }
 
     public function apiProducts(){
-        $product = Product::all();
-
-        return Datatables::of($product)
-            ->addColumn('category_name', function ($product){
+        $products = Product::all();
+    
+        return Datatables::of($products)
+            ->addColumn('id', function ($product){
+                return $product->id;
+            })
+            ->addColumn('category_id', function ($product){
                 return $product->category->name;
             })
-            ->addColumn('show_photo', function($product){
-                if ($product->image == NULL){
-                    return 'No Image';
-                }
-                return '<img class="rounded-square" width="50" height="50" src="'. url($product->image) .'" alt="">';
+            ->addColumn('nama', function($product) {
+                return $product->nama;
+            })
+            ->addColumn('spec', function($product) {
+                return $product->spec;
+            })
+            ->addColumn('qty', function($product) {
+                return $product->qty;
+            })
+            ->addColumn('barcode', function($product) {
+                return $product->barcode;
+            })
+            ->addColumn('date', function($product) {
+                // Format kolom tanggal sesuai kebutuhan Anda
+                return $product->date;
+            })
+            ->addColumn('posisi', function($product) {
+                return $product->posisi;
             })
             ->addColumn('action', function($product){
-                return'<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
+                return '<a onclick="editForm('. $product->id .')" class="btn btn-primary btn-xs"><i class="glyphicon glyphicon-edit"></i> Edit</a> ' .
                     '<a onclick="deleteData('. $product->id .')" class="btn btn-danger btn-xs"><i class="glyphicon glyphicon-trash"></i> Delete</a>';
             })
-            ->rawColumns(['category_name','show_photo','action'])->make(true);
-
+            ->rawColumns(['category_name','action'])
+            ->make(true);
     }
+    
 }

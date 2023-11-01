@@ -14,24 +14,23 @@
                 <div class="modal-body">
                     <input type="hidden" id="id" name="id">
 
-
                     <div class="box-body">
 
-                        <div class="form-group">
-                            <label >Category</label>
-                            {!! Form::select('category_id', $category, null, ['class' => 'form-control select', 'placeholder' => '-- Choose Category --', 'id' => 'category_id', 'required']) !!}
-                            <span class="help-block with-errors"></span>
-                        </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        {!! Form::select('category_id', $category, null, [
+                            'class' => 'form-control select',
+                            'placeholder' => '-- Choose Category --',
+                            'id' => 'category_id',
+                            'required'
+                        ]) !!}
+                        <span class="help-block with-errors"></span>
+                    </div>
+
 
                         <div class="form-group">
                             <label >Name</label>
                             <input type="text" class="form-control" id="nama" name="nama"  autofocus required>
-                            <span class="help-block with-errors"></span>
-                        </div>
-
-                        <div class="form-group">
-                            <label >Spec</label>
-                            <input type="text" class="form-control" id="spek" name="spek" >
                             <span class="help-block with-errors"></span>
                         </div>
 
@@ -41,9 +40,15 @@
                             <span class="help-block with-errors"></span>
                         </div>
 
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label >Image</label>
                             <input type="file" class="form-control" id="image" name="image" >
+                            <span class="help-block with-errors"></span>
+                        </div> -->
+
+                        <div class="form-group">
+                            <label >Spec</label>
+                            <input type="text" class="form-control" id="spec" name="spec" >
                             <span class="help-block with-errors"></span>
                         </div>
 
